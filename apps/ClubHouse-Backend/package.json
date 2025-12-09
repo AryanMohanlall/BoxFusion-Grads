@@ -1,0 +1,10 @@
+{
+  "name": "clubhouse-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "dotnet watch run --project ./ClubHouse.Backend.csproj",
+    "build": "dotnet publish ./ClubHouse.Backend.csproj -c Release -o ./publish",
+    "start": "dotnet run --project ./ClubHouse.Backend.csproj",
+    "clean": "dotnet clean ./ClubHouse.Backend.csproj"
+  }
+}

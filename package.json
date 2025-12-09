@@ -1,0 +1,21 @@
+{
+  "name": "club-house",
+  "version": "1.0.0",
+  "description": "A platform where people can make and manage clubs with other people in the same neighborhood",
+  "main": "index.js",
+  "scripts": {
+    "dev": "turbo run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "turbo": "^2.6.3"
+  },
+  "packageManager": "npm@11.6.4",
+  "workspaces": [
+    "apps/*",       
+    "packages/*"
+  ]
+}
