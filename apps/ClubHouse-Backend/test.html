@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <div>
+        <input id="emailInput" type="email" placeholder="Email" />
+        <input id="passwordInput" type="password" placeholder="Password" />
+        <input id="NameInput" type="text" placeholder="Name" />
+        <input id="SurnameInput" type="text" placeholder="Surname" />
+        <button onclick="registerUser()">Register</button>
+    </div>
+
+    <script>
+        async function registerUser() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const Name = document.getElementById('NameInput').value;
+            const Surname = document.getElementById('SurnameInput').value;
+
+            let newUser = {
+                UserName:email,
+                Email: email,
+                Password: password,
+                Name: Name,
+                Surname: Surname,
+                Latitude: 0,              
+                Longitude: 0,             
+                DateOfBirth: new Date().toISOString(),
+                IsMale: true,
+            };
+
+            try {
+                const response = await fetch('https://localhost:7099/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newUser)
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    console.error("Registration failed:", error);
+                    return;
+                }
+
+                const result = await response.text();
+                console.log(`registration successful ${result}`)
+            } catch (error) {
+                console.warn(`Failed to register:${error}`);
+            }
+        }
+    </script>
+</body>
+</html>
