@@ -1,7 +1,9 @@
 ﻿using ClubHouse.Backend.DTOs;
 using ClubHouse.Backend.Models;
+using ClubHouse.Backend.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ClubHouse.Backend.Controllers
@@ -12,11 +14,13 @@ namespace ClubHouse.Backend.Controllers
     {
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
+        private readonly AppDbContext dbContext;
 
-        public AuthController(UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
+        public AuthController(UserManager<AppUser> userManager,SignInManager<AppUser> signInManager, AppDbContext dbContext)
         {
             this.signInManager= signInManager;
             this.userManager= userManager;
+            this.dbContext= dbContext;
         }
 
 
@@ -34,7 +38,9 @@ namespace ClubHouse.Backend.Controllers
             }
 
             //Check if the user already exists
-            if (userManager.FindByEmailAsync(registerDTO.Email) != null)
+            var existingUser = await userManager.FindByEmailAsync(registerDTO.Email);
+
+            if (existingUser!=null)
             {
                 return Conflict("Email already exists, try resetting password");
             }
@@ -50,14 +56,41 @@ namespace ClubHouse.Backend.Controllers
                 IsMale = registerDTO.IsMale,
                 Longitude = registerDTO.Longitude,
                 Latitude = registerDTO.Latitude,
+                PrefferedRadiusKm = registerDTO.PrefferedRadiusKm,
+                PrefferedCategories = registerDTO.PrefferedCategories,
+                AcceptedTermsAndConditions = registerDTO.AcceptedTermsAndConditions,
                 CreatedAt = DateTime.UtcNow,
                 LastUpdatedAt = DateTime.UtcNow,
                 IsBanned = false
             };
+
+            //Get the result of user creation
             var result = await userManager.CreateAsync(newUser, registerDTO.Password);
 
+            //Respond based on result
             if (result.Succeeded)
             {
+                //Create initial profile snapshot
+                var snapshot =new ProfileSnapshot
+                {
+                    AppUserId = newUser.Id,
+                    Name = newUser.Name,
+                    Surname = newUser.Surname,
+                    UserName = newUser.UserName,
+                    DateOfBirth = newUser.DateOfBirth,
+                    Longitude = newUser.Longitude,
+                    Latitude = newUser.Latitude,
+                    PrefferedRadiusKm = newUser.PrefferedRadiusKm,
+                    PrefferedCategories = newUser.PrefferedCategories,
+                    SnapshotTakenAt = DateTime.UtcNow,
+                    Reason = "Initial profile snapshot at registration"
+                };
+
+                //Save snapshot to database
+                dbContext.ProfileSnapshots.Add(snapshot);
+                await dbContext.SaveChangesAsync();
+
+                //Return success response
                 return Ok(new
                 {
                     message = "Registration successful",
@@ -66,10 +99,9 @@ namespace ClubHouse.Backend.Controllers
             }
             else
             {
+                //Return errors if creation failed
                 return BadRequest(result.Errors);
             }
         }
-
-        
     }
 }

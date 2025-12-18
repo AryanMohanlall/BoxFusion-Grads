@@ -8,5 +8,17 @@ namespace ClubHouse.Backend.Services
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
+
+        public DbSet<ProfileSnapshot> ProfileSnapshots { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<ProfileSnapshot>()
+                .HasOne(ps => ps.AppUser)
+                .WithMany(u => u.ProfileSnapshots)
+                .HasForeignKey(ps => ps.AppUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

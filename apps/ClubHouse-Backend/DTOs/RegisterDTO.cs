@@ -8,7 +8,10 @@
         string Email,
         string Password,
         double Longitude,
-        double Latitude
+        double Latitude,
+        double PrefferedRadiusKm,
+        string PrefferedCategories,
+        bool AcceptedTermsAndConditions
     );
     
 }
