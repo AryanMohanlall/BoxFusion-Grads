@@ -64,8 +64,10 @@ namespace ClubHouse.Backend.Controllers
                 IsBanned = false
             };
 
+            //Get the result of user creation
             var result = await userManager.CreateAsync(newUser, registerDTO.Password);
 
+            //Respond based on result
             if (result.Succeeded)
             {
                 //Create initial profile snapshot
@@ -84,10 +86,11 @@ namespace ClubHouse.Backend.Controllers
                     Reason = "Initial profile snapshot at registration"
                 };
 
+                //Save snapshot to database
                 dbContext.ProfileSnapshots.Add(snapshot);
                 await dbContext.SaveChangesAsync();
 
-
+                //Return success response
                 return Ok(new
                 {
                     message = "Registration successful",
@@ -96,6 +99,7 @@ namespace ClubHouse.Backend.Controllers
             }
             else
             {
+                //Return errors if creation failed
                 return BadRequest(result.Errors);
             }
         }
