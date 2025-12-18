@@ -11,6 +11,11 @@ namespace ClubHouse.Backend.Models
         public bool IsBanned { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
+        public double PrefferedRadiusKm {get;set;}
+        public string PrefferedCategories { get; set; }
+
+        public ICollection<ProfileSnapshot> ProfileSnapshots { get; set; }
+        public bool AcceptedTermsAndConditions { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
     }
